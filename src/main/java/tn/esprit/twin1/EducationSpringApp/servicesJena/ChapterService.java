@@ -224,7 +224,7 @@ public class ChapterService {
                 if (!ChapterObject.has("Chapter")) {
                     ChapterObject.put("id", id);
                     ChapterObject.put("Name", ChapterName);
-                    ChapterObject.put("Hours toComplete", hashours_toComplete);
+                    ChapterObject.put("hours_toComplete", hashours_toComplete);
                     ChapterObject.put("Description", ChapterDescription);
                     ChapterMap.put(ChapterName, ChapterObject);
                 }
