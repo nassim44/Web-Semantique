@@ -1,7 +1,7 @@
 package tn.esprit.twin1.EducationSpringApp.servicesJena;
 
-import org.apache.jena.rdf.model.*;
 import org.apache.jena.query.*;
+import org.apache.jena.rdf.model.*;
 import org.apache.jena.util.FileManager;
 import org.apache.jena.vocabulary.OWL;
 import org.apache.jena.vocabulary.RDF;
@@ -16,12 +16,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Component
-public class EventService {
+public class ChapterService {
 
-    private static final String RDF_FILE_PATH = "C:\\Users\\yassine\\Desktop\\9raya\\Web Semantique\\webSemantique.rdf";
+    private static final String RDF_FILE_PATH = "C:\\Users\\yassine\\Desktop\\9raya\\Web Semantique\\WebSemantique.rdf";
     private Model model;
 
-    // Method to load the RDF file
+
     public Model loadRDF() {
         model = ModelFactory.createDefaultModel();
         InputStream in = FileManager.get().open(RDF_FILE_PATH);
@@ -32,96 +32,82 @@ public class EventService {
         return model;
     }
 
-    // Method to add a new carbon footprint
-    public void addEvent(String id, String Name, Integer capacity,String description, String location,String categoryId) {
+    public void addChapter(String id, String Name,String Description, String hours_toComplete) {
         if (model == null) {
             loadRDF();
         }
-        // Create a new individual for the carbon footprint
-        Resource eventResource = model.createResource(
+
+        Resource ChapterResource = model.createResource(
                 "http://www.semanticweb.org/ahinfo/ontologies/2024/9/untitled-ontology-3#" + id);
-        eventResource.addProperty(RDF.type, model
-                .getResource("http://www.semanticweb.org/ahinfo/ontologies/2024/9/untitled-ontology-3#Event"));
+        ChapterResource.addProperty(RDF.type, model
+                .getResource("http://www.semanticweb.org/ahinfo/ontologies/2024/9/untitled-ontology-3#Chapter"));
 
-// Add name and capacity properties
-        eventResource.addProperty(
+
+        ChapterResource.addProperty(
                 model.getProperty("http://www.semanticweb.org/ahinfo/ontologies/2024/9/untitled-ontology-3#hasName"),
-                model.createLiteral(Name));
-        eventResource.addProperty(
-                model.getProperty("http://www.semanticweb.org/ahinfo/ontologies/2024/9/untitled-ontology-3#hasCapacity"),
-                model.createTypedLiteral(capacity));
-        eventResource.addProperty(
+                Name);
+        ChapterResource.addProperty(
                 model.getProperty("http://www.semanticweb.org/ahinfo/ontologies/2024/9/untitled-ontology-3#hasDescription"),
-                model.createLiteral(description));
-        eventResource.addProperty(
-                model.getProperty("http://www.semanticweb.org/ahinfo/ontologies/2024/9/untitled-ontology-3#hasLocation"),
-                model.createLiteral(location));
-        Resource categoryResource = model.getResource(
-                "http://www.semanticweb.org/ahinfo/ontologies/2024/9/untitled-ontology-3#" + categoryId);
-        eventResource.addProperty(
-                model.getProperty("http://www.semanticweb.org/ahinfo/ontologies/2024/9/untitled-ontology-3#isCategorizedBy"),
-                categoryResource);
+                Description);
+        ChapterResource.addProperty(
+                model.getProperty("http://www.semanticweb.org/ahinfo/ontologies/2024/9/untitled-ontology-3#hashours_toComplete"),
+                hours_toComplete);
 
+
+// Save the updated model back to the RDF file
         saveRDF();
     }
 
     // Method to update an existing carbon footprint
-    public void updateEvent(String Event,String eventName,Integer capacity,String eventDescription,String eventLocation) {
+    public void updateChapter(String id, String Name,String Description, String hours_toComplete) {
         if (model == null) {
             loadRDF();
         }
 
         // Find the existing carbon footprint resource by name
-        Resource eventRessource = model
-                .getResource("http://www.semanticweb.org/ahinfo/ontologies/2024/9/untitled-ontology-3#" + Event);
+        Resource ChapterRessource = model
+                .getResource("http://www.semanticweb.org/ahinfo/ontologies/2024/9/untitled-ontology-3#" + id);
 
-        if (eventRessource != null) {
+        if (ChapterRessource != null) {
             // Update the properties
-            eventRessource.removeAll(model
+            ChapterRessource.removeAll(model
                     .getProperty("http://www.semanticweb.org/ahinfo/ontologies/2024/9/untitled-ontology-3#hasName"));
-            eventRessource.addProperty(
+            ChapterRessource.addProperty(
                     model.getProperty("http://www.semanticweb.org/ahinfo/ontologies/2024/9/untitled-ontology-3#hasName"),
-                    eventName);
+                    Name);
 
-            eventRessource.removeAll(model.getProperty(
-                    "http://www.semanticweb.org/ahinfo/ontologies/2024/9/untitled-ontology-3#hasCapacity"));
-            eventRessource.addProperty(
-                    model.getProperty(
-                            "http://www.semanticweb.org/ahinfo/ontologies/2024/9/untitled-ontology-3#hasCapacity"),
-                    model.createTypedLiteral(capacity));
+            ChapterRessource.removeAll(model
+                    .getProperty("http://www.semanticweb.org/ahinfo/ontologies/2024/9/untitled-ontology-3#hasDescription"));
+            ChapterRessource.addProperty(
+                    model.getProperty("http://www.semanticweb.org/ahinfo/ontologies/2024/9/untitled-ontology-3#hasDescription"),
+                    Description);
 
-            eventRessource.removeAll(model.getProperty(
-                    "http://www.semanticweb.org/ahinfo/ontologies/2024/9/untitled-ontology-3#hasDescription"));
-            eventRessource.addProperty(
-                    model.getProperty(
-                            "http://www.semanticweb.org/ahinfo/ontologies/2024/9/untitled-ontology-3#hasDescription"),
-                    eventDescription);
+            ChapterRessource.removeAll(model
+                    .getProperty("http://www.semanticweb.org/ahinfo/ontologies/2024/9/untitled-ontology-3#hashours_toComplete"));
+            ChapterRessource.addProperty(
+                    model.getProperty("http://www.semanticweb.org/ahinfo/ontologies/2024/9/untitled-ontology-3#hashours_toComplete"),
+                    hours_toComplete);
 
-            eventRessource.removeAll(model.getProperty(
-                    "http://www.semanticweb.org/ahinfo/ontologies/2024/9/untitled-ontology-3#hasLocation"));
-            eventRessource.addProperty(
-                    model.getProperty(
-                            "http://www.semanticweb.org/ahinfo/ontologies/2024/9/untitled-ontology-3#hasLocation"),
-                    eventLocation);
             // Save changes
             saveRDF();
         }
     }
 
+
     // Method to delete a carbon footprint
-    public void deleteEvent(String id) {
+    public void deleteChapter(String id) {
         if (model == null) {
             loadRDF();
         }
 
         // Find the existing carbon footprint resource by name
-        Resource eventResource = model
+        Resource ChapterResource = model
                 .getResource("http://www.semanticweb.org/ahinfo/ontologies/2024/9/untitled-ontology-3#" + id);
 
-        if (eventResource != null) {
+        if (ChapterResource != null) {
             // Remove the resource from the model
-            model.removeAll(eventResource, null, null);
-            model.removeAll(null, null, eventResource);
+            model.removeAll(ChapterResource, null, null);
+            model.removeAll(null, null, ChapterResource);
 
             // Save changes
             saveRDF();
@@ -138,19 +124,18 @@ public class EventService {
     }
 
     // Method to query carbon footprints with dynamic object properties
-    public String queryCarbonFootprints() {
+    public String getChapters() {
         loadRDF();
         System.out.println("Model size: " + model.size());
 
         // Query string updated to also retrieve optional properties and related instances
         String queryString = "PREFIX ontology: <http://www.semanticweb.org/ahinfo/ontologies/2024/9/untitled-ontology-3#> "
-                + "SELECT ?event ?hasName ?hasCapacity ?hasDescription ?hasLocation "
+                + "SELECT ?Chapter ?hasName ?hashours_toComplete ?hasDescription "
                 + "WHERE { "
-                + "  ?event a ontology:Event . "
-                + "  ?event ontology:hasName ?hasName . "
-                + "  ?event ontology:hasCapacity ?hasCapacity . "
-                + "  ?event ontology:hasDescription ?hasDescription . "
-                + "  ?event ontology:hasLocation ?hasLocation . "
+                + "  ?Chapter a ontology:Chapter . "
+                + "  ?Chapter ontology:hasName ?hasName . "
+                + "  ?Chapter ontology:hashours_toComplete ?hashours_toComplete . "
+                + "  ?Chapter ontology:hasDescription ?hasDescription . "
                 + "}";
 
         Query query = QueryFactory.create(queryString);
@@ -158,31 +143,29 @@ public class EventService {
         try (QueryExecution qexec = QueryExecutionFactory.create(query, model)) {
             ResultSet results = qexec.execSelect();
 
-            JSONArray eventsArray = new JSONArray();
+            JSONArray ChaptersArray = new JSONArray();
 
-            Map<String, JSONObject> eventMap = new HashMap<>();
+            Map<String, JSONObject> ChapterMap = new HashMap<>();
 
             while (results.hasNext()) {
                 QuerySolution solution = results.nextSolution();
 
-                // Extract the event name
-                String eventName = solution.get("hasName").toString();
-                Integer eventCapacity = Integer.parseInt(solution.get("hasCapacity").toString().replaceAll("\\^\\^.*", ""));
-                String eventDescription = solution.get("hasDescription").toString();
-                String eventLocation = solution.get("hasLocation").toString();
-                String idURL = solution.getResource("event").toString();
+                // Extract the Chapter name
+                String ChapterName = solution.get("hasName").toString();
+                String hashours_toComplete = solution.get("hashours_toComplete").toString();
+                String ChapterDescription = solution.get("hasDescription").toString();
+                String idURL = solution.getResource("Chapter").toString();
                 String id = idURL.split("#")[1];
-                // Create or get the JSON object for this event
-                JSONObject eventObject = eventMap.getOrDefault(eventName, new JSONObject());
-                if (!eventObject.has("event")) {
-                    eventObject.put("id", id);
-                    eventObject.put("event", eventName);
-                    eventObject.put("capacity", eventCapacity);
-                    eventObject.put("description", eventDescription);
-                    eventObject.put("location", eventLocation);
-                    eventMap.put(eventName, eventObject);
+                // Create or get the JSON object for this Chapter
+                JSONObject ChapterObject = ChapterMap.getOrDefault(ChapterName, new JSONObject());
+                if (!ChapterObject.has("Chapter")) {
+                    ChapterObject.put("id", id);
+                    ChapterObject.put("Name", ChapterName);
+                    ChapterObject.put("hours_toComplete", hashours_toComplete);
+                    ChapterObject.put("Description", ChapterDescription);
+                    ChapterMap.put(ChapterName, ChapterObject);
                 }
-                eventsArray.put(eventObject);
+                ChaptersArray.put(ChapterObject);
                 // Extract the dynamic relationship if present
 
             }
@@ -191,7 +174,7 @@ public class EventService {
 
 
             JSONObject resultJson = new JSONObject();
-            resultJson.put("events", eventsArray);
+            resultJson.put("Chapters", ChaptersArray);
             return resultJson.toString();
         } catch (Exception e) {
             e.printStackTrace();
@@ -201,7 +184,7 @@ public class EventService {
 
     // ***** Recherche et filtrage ******/
 
-    public String searchByID(String Name) {
+    public String searchByName(String Name) {
         if (model == null) {
             loadRDF();
         }
@@ -209,42 +192,43 @@ public class EventService {
         String escapedName = Name.replaceAll("[\"']", "\\\\$0");
 
         String queryString = "PREFIX ontology: <http://www.semanticweb.org/ahinfo/ontologies/2024/9/untitled-ontology-3#> "
-                + "SELECT ?event ?hasName ?hasCapacity "
+                + "SELECT ?Chapter ?hasName ?hashours_toComplete ?hasDescription "
                 + "WHERE { "
-                + "  ?event a ontology:Event . "
-                + "  ?event ontology:hasName ?hasName . "
-                + "  ?event ontology:hasCapacity ?hasCapacity . "
+                + "  ?Chapter a ontology:Chapter . "
+                + "  ?Chapter ontology:hasName ?hasName . "
+                + "  ?Chapter ontology:hashours_toComplete ?hashours_toComplete . "
+                + "  ?Chapter ontology:hasDescription ?hasDescription . "
                 + "  FILTER (REGEX(STR(?hasName), \"" + escapedName + "\", \"i\")) "
                 + "}";
 
         Query query = QueryFactory.create(queryString);
 
         try (QueryExecution qexec = QueryExecutionFactory.create(query, model)) {
-
             ResultSet results = qexec.execSelect();
 
-            JSONArray eventsArray = new JSONArray();
+            JSONArray ChaptersArray = new JSONArray();
 
-            Map<String, JSONObject> eventMap = new HashMap<>();
+            Map<String, JSONObject> ChapterMap = new HashMap<>();
 
             while (results.hasNext()) {
                 QuerySolution solution = results.nextSolution();
-                // Extract the event name
-                String eventName = solution.get("hasName").toString();
-                Integer eventCapacity = Integer.parseInt(solution.get("hasCapacity").toString().replaceAll("\\^\\^.*", ""));
 
-                String idURL = solution.getResource("event").toString();
+                // Extract the Chapter name
+                String ChapterName = solution.get("hasName").toString();
+                String hashours_toComplete = solution.get("hashours_toComplete").toString();
+                String ChapterDescription = solution.get("hasDescription").toString();
+                String idURL = solution.getResource("Chapter").toString();
                 String id = idURL.split("#")[1];
-                // Create or get the JSON object for this event
-                JSONObject eventObject = eventMap.getOrDefault(eventName, new JSONObject());
-                if (!eventObject.has("event")) {
-                    eventObject.put("id", id);
-                    eventObject.put("event", eventName);
-                    eventObject.put("capacity", eventCapacity);
-                    eventMap.put(eventName, eventObject);
+                // Create or get the JSON object for this Chapter
+                JSONObject ChapterObject = ChapterMap.getOrDefault(ChapterName, new JSONObject());
+                if (!ChapterObject.has("Chapter")) {
+                    ChapterObject.put("id", id);
+                    ChapterObject.put("Name", ChapterName);
+                    ChapterObject.put("hours_toComplete", hashours_toComplete);
+                    ChapterObject.put("Description", ChapterDescription);
+                    ChapterMap.put(ChapterName, ChapterObject);
                 }
-                eventsArray.put(eventObject);
-                // Extract the dynamic relationship if present
+                ChaptersArray.put(ChapterObject);
 
             }
 
@@ -252,7 +236,7 @@ public class EventService {
 
 
             JSONObject resultJson = new JSONObject();
-            resultJson.put("events", eventsArray);
+            resultJson.put("Chapters", ChaptersArray);
             return resultJson.toString();
         } catch (Exception e) {
             e.printStackTrace();
@@ -297,8 +281,8 @@ public class EventService {
 
                 // Create or get the JSON object for this footprint
                 JSONObject carbonFootprintObject = footprintsMap.getOrDefault(carbonFootprintName, new JSONObject());
-                if (!carbonFootprintObject.has("Event")) {
-                    carbonFootprintObject.put("Event", carbonFootprintName);
+                if (!carbonFootprintObject.has("Chapter")) {
+                    carbonFootprintObject.put("Chapter", carbonFootprintName);
                     carbonFootprintObject.put("hasCarbonValue", hasCarbonValue);
                     carbonFootprintObject.put("hasType", hasType);
                     carbonFootprintObject.put("relations", new JSONArray()); // Initialize relations as empty
@@ -408,7 +392,7 @@ public class EventService {
         saveRDF();
     }
 
-    public void addInstanceWithRelation(String Event, String reductionStrategyName, double carbonValue,
+    public void addInstanceWithRelation(String Chapter, String reductionStrategyName, double carbonValue,
             String type, String relationName) {
         if (model == null) {
             loadRDF();
@@ -416,7 +400,7 @@ public class EventService {
 
         // Créer l'instance CarbonFootprint
         Resource footprintInstance = model.createResource(
-                "http://www.semanticweb.org/ahinfo/ontologies/2024/9/untitled-ontology-3#" + Event);
+                "http://www.semanticweb.org/ahinfo/ontologies/2024/9/untitled-ontology-3#" + Chapter);
         footprintInstance.addProperty(RDF.type, model
                 .getResource("http://www.semanticweb.org/ahinfo/ontologies/2024/9/untitled-ontology-3#CarbonFootprint"));
         footprintInstance.addProperty(

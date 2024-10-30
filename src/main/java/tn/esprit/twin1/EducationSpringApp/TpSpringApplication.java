@@ -8,6 +8,7 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
+import tn.esprit.twin1.EducationSpringApp.servicesJena.CoursesService;
 import tn.esprit.twin1.EducationSpringApp.servicesJena.EventService;
 
 @EnableScheduling
@@ -19,7 +20,10 @@ public class TpSpringApplication implements CommandLineRunner {
 
 
     @Autowired
-    private EventService jena; // Inject the Jena component
+    private EventService eventService;
+    @Autowired
+
+    private CoursesService coursesService;
 
     public static void main(String[] args) {
         SpringApplication.run(TpSpringApplication.class, args);
