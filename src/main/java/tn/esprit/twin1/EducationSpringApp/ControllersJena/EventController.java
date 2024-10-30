@@ -11,7 +11,7 @@ import java.util.Map; // Import the Map interface
 import java.util.Random;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:4200") // Enable CORS for this controller
+@CrossOrigin(origins = "http://localhost:3000") // Enable CORS for this controller
 @RequestMapping("/events") // Base URL for the controller
 public class EventController {
 
@@ -20,20 +20,23 @@ public class EventController {
 
     // Endpoint to get carbon footprint data from RDF file in JSON format
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> getCarbonFootprintsData() {
+    public ResponseEntity<String> getEvents() {
         String result = eventService.queryCarbonFootprints();
         return ResponseEntity.ok(result);
     }
 
     // Endpoint to add a new carbon footprint
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> addEvents(@RequestBody Map<String, Object> newCarbonFootprint) {
+    public ResponseEntity<String> addEvents(@RequestBody Map<String, Object> newEvent) {
+
         String id = generateRandomString(12);
-        String eventName = (String) newCarbonFootprint.get("Name");
-        Integer capacity = (Integer) newCarbonFootprint.get("Capacity");
-        String eventDescription = (String) newCarbonFootprint.get("Description");
-        String eventLocation = (String) newCarbonFootprint.get("Location");
-        eventService.addEvent(id,eventName, capacity,eventDescription,eventLocation);
+        String eventName = (String) newEvent.get("Name");
+        Integer capacity = (Integer) newEvent.get("Capacity");
+        String eventDescription = (String) newEvent.get("Description");
+        String eventLocation = (String) newEvent.get("Location");
+        String CategorieID = (String) newEvent.get("CategorieID");
+
+        eventService.addEvent(id,eventName, capacity,eventDescription,eventLocation,CategorieID);
         return ResponseEntity.ok("Event footprint added successfully!");
     }
     private static final String CHARACTERS = "0123456789";
@@ -47,19 +50,22 @@ public class EventController {
         return sb.toString();
     }
     // Endpoint to update an existing carbon footprint
-    @PutMapping(value = "/{eventName}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> updateEvents(@PathVariable String eventName,
+    @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> updateEvents(@PathVariable String id,
             @RequestBody Map<String, Object> updatedevent) {
-        String newName = updatedevent.get("Name").toString();
-        Integer newCapacity = Integer.parseInt(updatedevent.get("Capacity").toString());
+        String eventName = (String) updatedevent.get("Name");
+        Integer capacity = (Integer) updatedevent.get("Capacity");
+        String eventDescription = (String) updatedevent.get("Description");
+        String eventLocation = (String) updatedevent.get("Location");
 
-        eventService.updateEvent(eventName,newName, newCapacity);
+        eventService.updateEvent(id,eventName, capacity,eventDescription,eventLocation);
         return ResponseEntity.ok("Carbon footprint updated successfully!");
     }
 
     // Endpoint to delete a carbon footprint
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<String> deleteEvents(@PathVariable String id) {
+        System.out.println(id);
         eventService.deleteEvent(id);
         return ResponseEntity.ok("Carbon footprint deleted successfully!");
     }
@@ -67,6 +73,7 @@ public class EventController {
     // Endpoint to search carbon footprints by name or type
     @GetMapping(value = "/search/{name}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> searchEventByID(@PathVariable String name) {
+        System.out.println((name));
         String result = eventService.searchByID(name);
         return ResponseEntity.ok(result);
     }
