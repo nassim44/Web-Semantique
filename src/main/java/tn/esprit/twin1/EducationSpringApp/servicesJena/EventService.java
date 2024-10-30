@@ -33,11 +33,10 @@ public class EventService {
     }
 
     // Method to add a new carbon footprint
-    public void addEvent(String id, String Name, Integer capacity,String description, String location) {
+    public void addEvent(String id, String Name, Integer capacity,String description, String location,String categoryId) {
         if (model == null) {
             loadRDF();
         }
-
         // Create a new individual for the carbon footprint
         Resource eventResource = model.createResource(
                 "http://www.semanticweb.org/ahinfo/ontologies/2024/9/untitled-ontology-3#" + id);
@@ -57,14 +56,17 @@ public class EventService {
         eventResource.addProperty(
                 model.getProperty("http://www.semanticweb.org/ahinfo/ontologies/2024/9/untitled-ontology-3#hasLocation"),
                 model.createLiteral(location));
+        Resource categoryResource = model.getResource(
+                "http://www.semanticweb.org/ahinfo/ontologies/2024/9/untitled-ontology-3#" + categoryId);
+        eventResource.addProperty(
+                model.getProperty("http://www.semanticweb.org/ahinfo/ontologies/2024/9/untitled-ontology-3#isCategorizedBy"),
+                categoryResource);
 
-
-// Save the updated model back to the RDF file
         saveRDF();
     }
 
     // Method to update an existing carbon footprint
-    public void updateEvent(String Event,String newName, Integer newCapacity) {
+    public void updateEvent(String Event,String eventName,Integer capacity,String eventDescription,String eventLocation) {
         if (model == null) {
             loadRDF();
         }
@@ -79,15 +81,28 @@ public class EventService {
                     .getProperty("http://www.semanticweb.org/ahinfo/ontologies/2024/9/untitled-ontology-3#hasName"));
             eventRessource.addProperty(
                     model.getProperty("http://www.semanticweb.org/ahinfo/ontologies/2024/9/untitled-ontology-3#hasName"),
-                    newName);
+                    eventName);
 
             eventRessource.removeAll(model.getProperty(
                     "http://www.semanticweb.org/ahinfo/ontologies/2024/9/untitled-ontology-3#hasCapacity"));
             eventRessource.addProperty(
                     model.getProperty(
                             "http://www.semanticweb.org/ahinfo/ontologies/2024/9/untitled-ontology-3#hasCapacity"),
-                    model.createTypedLiteral(newCapacity));
+                    model.createTypedLiteral(capacity));
 
+            eventRessource.removeAll(model.getProperty(
+                    "http://www.semanticweb.org/ahinfo/ontologies/2024/9/untitled-ontology-3#hasDescription"));
+            eventRessource.addProperty(
+                    model.getProperty(
+                            "http://www.semanticweb.org/ahinfo/ontologies/2024/9/untitled-ontology-3#hasDescription"),
+                    eventDescription);
+
+            eventRessource.removeAll(model.getProperty(
+                    "http://www.semanticweb.org/ahinfo/ontologies/2024/9/untitled-ontology-3#hasLocation"));
+            eventRessource.addProperty(
+                    model.getProperty(
+                            "http://www.semanticweb.org/ahinfo/ontologies/2024/9/untitled-ontology-3#hasLocation"),
+                    eventLocation);
             // Save changes
             saveRDF();
         }
@@ -129,12 +144,13 @@ public class EventService {
 
         // Query string updated to also retrieve optional properties and related instances
         String queryString = "PREFIX ontology: <http://www.semanticweb.org/ahinfo/ontologies/2024/9/untitled-ontology-3#> "
-                + "SELECT ?event ?hasName ?hasCapacity ?hasDescription "
+                + "SELECT ?event ?hasName ?hasCapacity ?hasDescription ?hasLocation "
                 + "WHERE { "
                 + "  ?event a ontology:Event . "
                 + "  ?event ontology:hasName ?hasName . "
                 + "  ?event ontology:hasCapacity ?hasCapacity . "
                 + "  ?event ontology:hasDescription ?hasDescription . "
+                + "  ?event ontology:hasLocation ?hasLocation . "
                 + "}";
 
         Query query = QueryFactory.create(queryString);
@@ -153,6 +169,7 @@ public class EventService {
                 String eventName = solution.get("hasName").toString();
                 Integer eventCapacity = Integer.parseInt(solution.get("hasCapacity").toString().replaceAll("\\^\\^.*", ""));
                 String eventDescription = solution.get("hasDescription").toString();
+                String eventLocation = solution.get("hasLocation").toString();
                 String idURL = solution.getResource("event").toString();
                 String id = idURL.split("#")[1];
                 // Create or get the JSON object for this event
@@ -162,6 +179,7 @@ public class EventService {
                     eventObject.put("event", eventName);
                     eventObject.put("capacity", eventCapacity);
                     eventObject.put("description", eventDescription);
+                    eventObject.put("location", eventLocation);
                     eventMap.put(eventName, eventObject);
                 }
                 eventsArray.put(eventObject);
