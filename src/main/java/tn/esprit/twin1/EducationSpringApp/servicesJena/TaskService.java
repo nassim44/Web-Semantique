@@ -197,5 +197,67 @@ public class TaskService {
 
 
 
+    // Method to get relations between Tasks and Plants
+    public String getRelationsBetweenTasksAndPlants() {
+        if (model == null) {
+            loadRDF();
+        }
+
+        String queryString = "PREFIX ontology: <http://www.semanticweb.org/ahinfo/ontologies/2024/9/untitled-ontology-3#> "
+                + "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> "
+                + "PREFIX owl: <http://www.w3.org/2002/07/owl#> "
+                + "SELECT ?property "
+                + "WHERE { "
+                + "  ?property a owl:ObjectProperty ; "
+                + "           rdfs:domain ontology:Task ; "
+                + "           rdfs:range ontology:Plant . "
+                + "}";
+
+        Query query = QueryFactory.create(queryString);
+        JSONArray relationsArray = new JSONArray();
+
+        synchronized (model) { // Synchronisation sur le modèle
+            try (QueryExecution qexec = QueryExecutionFactory.create(query, model)) {
+                ResultSet results = qexec.execSelect();
+
+                while (results.hasNext()) {
+                    QuerySolution solution = results.nextSolution();
+                    String property = solution.getResource("property").getLocalName();
+                    relationsArray.put(property);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new RuntimeException("Error retrieving relations: " + e.getMessage());
+            }
+        }
+
+        JSONObject resultJson = new JSONObject();
+        resultJson.put("relations", relationsArray);
+        return resultJson.toString();
+    }
+
+    public void addRelation(String taskId, String plantId, String relationName) {
+        if (model == null) {
+            loadRDF();
+        }
+
+        // Create resources for the task and plant using their IDs
+        Resource taskResource = model.getResource(
+                "http://www.semanticweb.org/ahinfo/ontologies/2024/9/untitled-ontology-3#" + taskId);
+        Resource plantResource = model.getResource(
+                "http://www.semanticweb.org/ahinfo/ontologies/2024/9/untitled-ontology-3#" + plantId);
+
+        // Create the relation property if it doesn't already exist
+        Property relationProperty = model.getProperty(
+                "http://www.semanticweb.org/ahinfo/ontologies/2024/9/untitled-ontology-3#" + relationName);
+
+        // Add the relation between task and plant
+        model.add(taskResource, relationProperty, plantResource);
+
+        // Save the updated model back to the RDF file
+        saveRDF();
+    }
+
+
 
 }

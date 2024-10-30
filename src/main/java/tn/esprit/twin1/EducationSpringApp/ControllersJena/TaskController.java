@@ -74,6 +74,37 @@ public class TaskController {
     }
 
 
+    @GetMapping("/relations/tasks-plants")
+    public ResponseEntity<String> getTaskPlantRelations() {
+        try {
+            String relations = taskService.getRelationsBetweenTasksAndPlants();
+            return ResponseEntity.ok(relations);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error retrieving relations: " + e.getMessage());
+        }
+    }
+
+
+    @PostMapping("/{taskId}/relations")
+    public ResponseEntity<String> addRelation(
+            @PathVariable String taskId,
+            @RequestBody Map<String, String> relationData) {
+
+        String plantId = relationData.get("plantId");
+        String relationName = relationData.get("relationName");
+
+        if (plantId == null || relationName == null) {
+            return ResponseEntity.badRequest().body("plantId and relationName are required.");
+        }
+
+        try {
+            taskService.addRelation(taskId, plantId, relationName);
+            return ResponseEntity.ok("Relation added successfully!");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Error adding relation: " + e.getMessage());
+        }
+    }
 
 }
 
