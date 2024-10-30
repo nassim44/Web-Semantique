@@ -16,8 +16,7 @@ import java.util.Map;
 @Component
 public class ProductService {
 
-    //private static final String RDF_FILE_PATH = "C:/Users/nassi/OneDrive/Bureau/antonio/webSemantique.rdf";
-    private static final String RDF_FILE_PATH = "C:/Users/seif/Desktop/web.rdf";
+    private static final String RDF_FILE_PATH = "C:\\Users\\yassine\\Desktop\\9raya\\Web Semantique\\webSemantique.rdf";
     private Model model;
 
     // Method to load the RDF file

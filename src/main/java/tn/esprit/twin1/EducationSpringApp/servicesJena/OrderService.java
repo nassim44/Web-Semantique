@@ -15,7 +15,7 @@ import java.io.InputStream;
 public class OrderService {
 
     // Path to the RDF file
-    private static final String RDF_FILE_PATH = "C:/Users/seif/Desktop/web.rdf";
+    private static final String RDF_FILE_PATH = "C:\\Users\\yassine\\Desktop\\9raya\\Web Semantique\\webSemantique.rdf";
     private Model model;
 
     // Method to load the RDF file
