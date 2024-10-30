@@ -18,7 +18,7 @@ import java.util.Map;
 @Component
 public class EventService {
 
-    private static final String RDF_FILE_PATH = "C:/Users/nassi/OneDrive/Bureau/antonio/webSemantique.rdf";
+    private static final String RDF_FILE_PATH = "C:/Users/malek/OneDrive/Documents/Websemantique/webSemantique.rdf";
     private Model model;
 
     // Method to load the RDF file
